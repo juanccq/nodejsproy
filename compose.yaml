@@ -5,10 +5,11 @@ services:
       dockerfile: Dockerfile.dev
     environment:
       NODE_ENV: development
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
+      POSTGRES_HOST: ${DB_HOST}
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD_FILE: /run/secrets/db-password
-      POSTGRES_DB: example
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PORT: ${DB_PORT}
     expose:
       - 3000
     ports:
@@ -16,25 +17,27 @@ services:
       - 9229:9229
     command: npm run dev
     depends_on:
-      db:
+      db_node:
         condition: service_healthy
     secrets:
       - db-password
     volumes:
       - .:/app
-  db:
+  db_node:
     image: postgres
     restart: always
-    user: postgres
+    user: ${DB_USER}
     secrets:
       - db-password
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=example
+      - POSTGRES_DB=${DB_NAME}
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     expose:
       - 5432
+    ports:
+      - 6543:5432
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s
