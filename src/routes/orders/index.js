@@ -1,13 +1,9 @@
 import { Router } from 'express';
+import { createOrder, getOrders } from '../../controllers/orderController.js';
+
 const router = Router();
 
-// Define your routes here
-router.get('/', (req, res) => {
-  res.send('User Home');
-});
-
-router.get('/list', (req, res) => {
-  res.send('User List');
-});
+router.post('/', createOrder);
+router.get('/', getOrders);
 
 export default router;
